@@ -16,7 +16,7 @@ export default function Home() {
   useEffect(() => {
     const timer = setInterval(() => {
       nextSlide();
-    }, 2000);
+    }, 2500);
     return () => clearInterval(timer);
   }, [currentIndex]);
 
