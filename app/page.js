@@ -47,7 +47,7 @@ export default function Home() {
         <button onClick={nextSlide} className="absolute right-4 top-1/2 bg-white/50 p-3 rounded-full hover:bg-white transition">→</button>
         
         <div className="absolute inset-0 bg-black/20 flex items-center justify-center pointer-events-none">
-          <h1 className="text-white text-5xl font-serif tracking-tighter">Ubud Haven</h1>
+          <h1 className="text-white text-6xl font-serif tracking-tighter">Ubud Haven</h1>
         </div>
       </section>
 
