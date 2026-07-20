@@ -11,12 +11,13 @@ export default function Navbar() {
   
   const dropdownRef = useRef(null);
 
+  // Menggunakan gambar bendera resmi berbasis URL agar tampil konsisten di semua komputer/HP
   const languages = [
-    { name: 'English', code: 'en', flag: '🇬🇧' },
-    { name: 'Indonesia', code: 'id', flag: '🇮🇩' },
-    { name: '日本語', code: 'ja', flag: '🇯🇵' },
-    { name: 'Español', code: 'es', flag: '🇪🇸' },
-    { name: '中文', code: 'zh-CN', flag: '🇨🇳' },
+    { name: 'English', code: 'en', flag: 'https://flagcdn.com/w40/gb.png' },
+    { name: 'Indonesia', code: 'id', flag: 'https://flagcdn.com/w40/id.png' },
+    { name: '日本語', code: 'ja', flag: 'https://flagcdn.com/w40/jp.png' },
+    { name: 'Español', code: 'es', flag: 'https://flagcdn.com/w40/es.png' },
+    { name: '中文', code: 'zh-CN', flag: 'https://flagcdn.com/w40/cn.png' },
   ];
 
   useEffect(() => {
@@ -77,10 +78,8 @@ export default function Navbar() {
 
   return (
     <>
-      {/* Sembunyikan elemen dan banner bawaan Google Translate */}
       <div id="google_translate_element" className="hidden"></div>
       <style jsx global>{`
-        /* Menghilangkan banner atas Google Translate */
         body {
           top: 0 !important;
         }
@@ -132,16 +131,15 @@ export default function Navbar() {
               <button
                 onClick={() => setLangDropdownOpen(!langDropdownOpen)}
                 className="flex items-center justify-center w-10 h-10 rounded-full bg-neutral-800/60 hover:bg-neutral-800 border border-neutral-700 text-neutral-300 hover:text-white transition-all focus:outline-none"
-                title="Pilih Bahasa / Change Language"
+                title="Change Language"
               >
-                {/* Ikon Bola Dunia SVG */}
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round5" strokeWidth="1.5" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
                 </svg>
               </button>
 
               {langDropdownOpen && (
-                <div className="absolute right-0 mt-2 w-44 bg-neutral-900 border border-neutral-800 rounded-xl shadow-2xl overflow-hidden py-1 z-50">
+                <div className="absolute right-0 mt-2 w-48 bg-neutral-900 border border-neutral-800 rounded-xl shadow-2xl overflow-hidden py-1 z-50">
                   <div className="px-4 py-2 text-[10px] uppercase tracking-widest text-neutral-500 border-b border-neutral-800 font-semibold">
                     Select Language
                   </div>
@@ -155,7 +153,7 @@ export default function Navbar() {
                           : 'text-neutral-300 hover:bg-neutral-800'
                       }`}
                     >
-                      <span className="text-base">{lang.flag}</span>
+                      <img src={lang.flag} alt={lang.name} className="w-5 h-3.5 object-cover rounded-sm shadow-sm" />
                       <span>{lang.name}</span>
                     </button>
                   ))}
@@ -191,19 +189,19 @@ export default function Navbar() {
         {mobileMenuOpen && (
           <div className="md:hidden absolute top-full left-0 right-0 bg-neutral-900/95 backdrop-blur-lg border-t border-neutral-800 shadow-xl py-6 px-6 flex flex-col space-y-4 text-center">
             
-            <div className="flex justify-center items-center space-x-2 py-2 border-b border-neutral-800">
+            <div className="flex justify-center items-center space-x-3 py-2 border-b border-neutral-800">
               {languages.map((lang) => (
                 <button
                   key={lang.code}
                   onClick={() => changeLanguage(lang)}
-                  className={`px-2.5 py-1.5 rounded-lg text-sm transition-all ${
+                  className={`p-2 rounded-lg transition-all ${
                     currentLang === lang.name
-                      ? 'bg-amber-600 text-white scale-105'
-                      : 'bg-neutral-800 text-neutral-300 hover:bg-neutral-700'
+                      ? 'bg-amber-600 scale-105'
+                      : 'bg-neutral-800 hover:bg-neutral-700'
                   }`}
                   title={lang.name}
                 >
-                  {lang.flag}
+                  <img src={lang.flag} alt={lang.name} className="w-5 h-3.5 object-cover rounded-sm" />
                 </button>
               ))}
             </div>
