@@ -14,8 +14,7 @@ const geistMono = Geist_Mono({
 export const metadata = {
   title: "Ubud Haven | Luxury Private Villas",
   description: "Experience the serenity of Ubud",
-  icons: {
-    icon: "/favicon.ico", // atau "/logo.png" sesuai nama file Bli
+  icons: {icon: "/favicon.ico", // atau "/logo.png" 
   },
 };
 
