@@ -12,7 +12,7 @@ export default function Home() {
 
   const [currentIndex, setCurrentIndex] = useState(0);
 
-  // Auto slide setiap 5 detik
+  // skading kadung pang dung ding, dung padungking
   useEffect(() => {
     const timer = setInterval(() => {
       nextSlide();
