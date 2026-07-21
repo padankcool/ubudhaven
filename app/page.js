@@ -1,14 +1,15 @@
 "use client";
 import { useState, useEffect } from 'react';
 import Navbar from "../components/Navbar";
+import Navbar from '@/components/Navbar';
+import Hero from '@/components/Hero';
 
 export default function Home() {
-  const photos = [
-    "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?q=80&w=2000",
-    "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?q=80&w=2000",
-    "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?q=80&w=2000",
-    "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?q=80&w=2000"
-  ];
+  return (
+    <main className="min-h-screen bg-neutral-950 text-white">
+      <Navbar />
+      <Hero />
+    
 
   const [currentIndex, setCurrentIndex] = useState(0);
 
