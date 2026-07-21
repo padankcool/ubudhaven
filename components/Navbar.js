@@ -120,7 +120,7 @@ export default function Navbar() {
               alt="Ubud Haven Logo" 
               width={300} 
               height={60} 
-              className="h-10 w-auto object-contain filter brightness-0 invert" 
+              className="h-14 md:h-16 w-auto object-contain filter brightness-0 invert" 
               priority
             />
           </Link>
