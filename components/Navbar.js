@@ -188,7 +188,7 @@ export default function Navbar() {
 
             {/* Tombol Book Now */}
             <Link
-              href="#booking"
+              href="/booking"
               className="px-6 py-2.5 text-xs font-medium tracking-widest uppercase bg-amber-600 text-white rounded-full hover:bg-amber-500 transition-all shadow-md"
             >
               Book Now

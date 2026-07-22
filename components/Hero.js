@@ -36,7 +36,7 @@ export default function Hero() {
         {/* Tombol Aksi */}
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
           <Link
-            href="#booking"
+            href="/booking"
             className="w-full sm:w-auto px-8 py-3.5 text-xs font-medium tracking-widest uppercase bg-amber-600 text-white rounded-full hover:bg-amber-500 transition-all shadow-lg"
           >
             Book Your Stay
