@@ -2,54 +2,107 @@
 
 import { useState } from 'react';
 import Navbar from '@/components/Navbar';
-import Image from 'next/image';
 
-// --- KOMPONEN IMAGE SLIDER ---
+// --- KOMPONEN IMAGE SLIDER (Dengan Fungsi Swipe & Drag) ---
 const ImageSlider = ({ images }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
+  
+  // State untuk melacak posisi sentuhan/kursor
+  const [touchStart, setTouchStart] = useState(0);
+  const [touchEnd, setTouchEnd] = useState(0);
 
   const nextSlide = (e) => {
-    e.stopPropagation();
+    if (e) e.stopPropagation();
     setCurrentIndex((prev) => (prev + 1) % images.length);
   };
 
   const prevSlide = (e) => {
-    e.stopPropagation();
+    if (e) e.stopPropagation();
     setCurrentIndex((prev) => (prev - 1 + images.length) % images.length);
   };
 
+  // --- FUNGSI SWIPE (HP) ---
+  const handleTouchStart = (e) => {
+    setTouchStart(e.targetTouches[0].clientX);
+  };
+  const handleTouchMove = (e) => {
+    setTouchEnd(e.targetTouches[0].clientX);
+  };
+  const handleTouchEnd = () => {
+    if (!touchStart || !touchEnd) return;
+    const distance = touchStart - touchEnd;
+    const isLeftSwipe = distance > 50;
+    const isRightSwipe = distance < -50;
+    if (isLeftSwipe) nextSlide();
+    if (isRightSwipe) prevSlide();
+    setTouchStart(0);
+    setTouchEnd(0);
+  };
+
+  // --- FUNGSI DRAG (MOUSE) ---
+  const handleMouseDown = (e) => {
+    setTouchStart(e.clientX);
+  };
+  const handleMouseMove = (e) => {
+    if (touchStart) setTouchEnd(e.clientX);
+  };
+  const handleMouseUp = () => {
+    if (!touchStart || !touchEnd) {
+      setTouchStart(0);
+      setTouchEnd(0);
+      return;
+    }
+    const distance = touchStart - touchEnd;
+    if (distance > 50) nextSlide();
+    if (distance < -50) prevSlide();
+    setTouchStart(0);
+    setTouchEnd(0);
+  };
+  const handleMouseLeave = () => {
+    if (touchStart) handleMouseUp();
+  };
+
   return (
-    <div className="relative w-full h-full group bg-neutral-200">
-      <Image
+    <div 
+      className="relative w-full h-full min-h-[300px] group bg-neutral-200 overflow-hidden cursor-grab active:cursor-grabbing"
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
+      onMouseDown={handleMouseDown}
+      onMouseMove={handleMouseMove}
+      onMouseUp={handleMouseUp}
+      onMouseLeave={handleMouseLeave}
+    >
+      {/* Menggunakan <img> biasa agar tidak diblokir oleh Next.js Domain Config */}
+      <img
         src={images[currentIndex]}
         alt={`Villa view ${currentIndex + 1}`}
-        fill
-        className="object-cover transition-all duration-500"
+        className="w-full h-full object-cover transition-all duration-500 pointer-events-none select-none"
       />
       
-      {/* Tombol Panah Kiri/Kanan (Muncul saat di-hover) */}
-      <div className="absolute inset-0 flex justify-between items-center px-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+      {/* Tombol Panah Kiri/Kanan (Muncul saat di-hover di Desktop) */}
+      <div className="absolute inset-0 flex justify-between items-center px-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
         <button
           onClick={prevSlide}
-          className="w-8 h-8 flex items-center justify-center rounded-full bg-neutral-900/50 hover:bg-neutral-900 text-white backdrop-blur-sm transition-all"
+          className="w-8 h-8 flex items-center justify-center rounded-full bg-neutral-900/60 hover:bg-neutral-900 text-white backdrop-blur-md transition-all pointer-events-auto"
         >
           ‹
         </button>
         <button
           onClick={nextSlide}
-          className="w-8 h-8 flex items-center justify-center rounded-full bg-neutral-900/50 hover:bg-neutral-900 text-white backdrop-blur-sm transition-all"
+          className="w-8 h-8 flex items-center justify-center rounded-full bg-neutral-900/60 hover:bg-neutral-900 text-white backdrop-blur-md transition-all pointer-events-auto"
         >
           ›
         </button>
       </div>
 
       {/* Indikator Titik (Dots) */}
-      <div className="absolute bottom-3 left-0 right-0 flex justify-center space-x-1.5 z-10">
+      <div className="absolute bottom-4 left-0 right-0 flex justify-center space-x-2 z-10">
         {images.map((_, idx) => (
           <div
             key={idx}
-            className={`h-1.5 rounded-full transition-all ${
-              idx === currentIndex ? 'w-4 bg-white' : 'w-1.5 bg-white/50'
+            className={`h-1.5 rounded-full transition-all duration-300 ${
+              idx === currentIndex ? 'w-5 bg-white shadow-sm' : 'w-1.5 bg-white/50'
             }`}
           />
         ))}
@@ -132,13 +185,11 @@ export default function BookingPage() {
   const [adults, setAdults] = useState(2);
   const [children, setChildren] = useState(0);
   
-  // State untuk Modal Kalender
   const [selectedVilla, setSelectedVilla] = useState(null);
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
 
-  // State untuk Modal Detail Villa
   const [detailsModal, setDetailsModal] = useState(null);
 
   const formatIDR = (price) => {
@@ -147,10 +198,8 @@ export default function BookingPage() {
     }).format(price);
   };
 
-  // Filter reaktif: Jika Adult > 2, Ricefield hilang otomatis
   const availableVillas = villasData.filter(villa => adults <= villa.maxAdults);
 
-  // Logika Kalender
   const daysInMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 0).getDate();
   const firstDayOfMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1).getDay();
   
@@ -182,7 +231,7 @@ export default function BookingPage() {
   };
 
   return (
-    <main className="min-h-screen bg-neutral-50 text-neutral-900 pb-20 font-sans">
+    <main className="min-h-screen bg-neutral-50 text-neutral-900 pb-20 font-sans overflow-x-hidden">
       <Navbar />
 
       <div className="pt-32 pb-16 bg-neutral-900 text-center">
@@ -234,7 +283,7 @@ export default function BookingPage() {
               <div key={villa.id} className="bg-white rounded-xl overflow-hidden shadow-md flex flex-col md:flex-row border border-neutral-100 group">
                 
                 {/* Image Slider Section */}
-                <div className="relative w-full md:w-2/5 h-72 md:h-auto">
+                <div className="relative w-full md:w-2/5 flex-shrink-0">
                   <ImageSlider images={villa.images} />
                 </div>
 
@@ -245,9 +294,9 @@ export default function BookingPage() {
                     </div>
                     <p className="text-sm text-neutral-500 mb-3">{villa.shortDesc}</p>
                     
-                    <ul className="text-xs text-neutral-500 mb-4 flex gap-4">
-                      <li className="flex items-center"><span className="text-amber-600 mr-1">👤</span> Max {villa.maxAdults} Adults</li>
-                      <li className="flex items-center"><span className="text-amber-600 mr-1">🛏️</span> {villa.specs[0]}</li>
+                    <ul className="text-xs text-neutral-500 mb-4 flex flex-col sm:flex-row sm:gap-4 gap-2">
+                      <li className="flex items-center"><span className="text-amber-600 mr-2">👤</span> Max {villa.maxAdults} Adults</li>
+                      <li className="flex items-center"><span className="text-amber-600 mr-2">🛏️</span> {villa.specs[0]}</li>
                     </ul>
 
                     {/* Tombol Popup Detail */}
@@ -260,7 +309,7 @@ export default function BookingPage() {
                   </div>
 
                   <div className="flex flex-col md:flex-row items-center justify-between mt-6 border-t border-neutral-100 pt-6 gap-4">
-                    <div className="text-center md:text-left">
+                    <div className="text-center md:text-left w-full md:w-auto">
                       <p className="text-xl font-semibold text-neutral-900">{formatIDR(villa.pricePerNight)}</p>
                       <p className="text-[10px] text-neutral-400 uppercase tracking-widest mt-1">per night</p>
                     </div>
@@ -285,21 +334,21 @@ export default function BookingPage() {
         <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 md:p-6">
           <div className="absolute inset-0 bg-neutral-900/70 backdrop-blur-sm" onClick={() => setDetailsModal(null)}></div>
           
-          <div className="relative bg-white rounded-xl shadow-2xl max-w-4xl w-full max-h-[90vh] flex flex-col overflow-hidden animate-fade-in-up">
+          <div className="relative bg-white rounded-xl shadow-2xl max-w-4xl w-full max-h-[90vh] flex flex-col overflow-hidden">
             
             {/* Header Modal Detail */}
-            <div className="flex justify-between items-center p-6 border-b border-neutral-100">
+            <div className="flex justify-between items-center p-6 border-b border-neutral-100 bg-white z-10">
               <h3 className="text-2xl font-serif">{detailsModal.name}</h3>
               <button onClick={() => setDetailsModal(null)} className="text-neutral-400 hover:text-neutral-900 text-xl font-bold px-2">✕</button>
             </div>
 
-            {/* Isi Konten Detail (Bisa di-scroll jika panjang) */}
+            {/* Isi Konten Detail (Scrollable) */}
             <div className="p-6 overflow-y-auto flex-grow bg-neutral-50">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 
                 {/* Kolom Kiri: Slider Besar & Spek */}
                 <div>
-                  <div className="h-64 rounded-xl overflow-hidden shadow-sm mb-6">
+                  <div className="h-72 rounded-xl overflow-hidden shadow-sm mb-6">
                     <ImageSlider images={detailsModal.images} />
                   </div>
                   
@@ -328,8 +377,8 @@ export default function BookingPage() {
                   <h4 className="text-xs font-bold uppercase tracking-widest text-neutral-400 mb-4">Complimentary Amenities</h4>
                   <div className="grid grid-cols-2 gap-3">
                     {detailsModal.amenities.map((amenity, i) => (
-                      <div key={i} className="flex items-center text-sm text-neutral-700 bg-white p-3 rounded-lg border border-neutral-100">
-                        <span className="text-emerald-600 mr-2">✓</span>
+                      <div key={i} className="flex items-center text-xs md:text-sm text-neutral-700 bg-white p-3 rounded-lg border border-neutral-100">
+                        <span className="text-emerald-600 mr-2 font-bold">✓</span>
                         {amenity}
                       </div>
                     ))}
@@ -339,19 +388,19 @@ export default function BookingPage() {
             </div>
 
             {/* Footer Modal Detail */}
-            <div className="p-6 bg-white border-t border-neutral-100 flex justify-between items-center">
-              <div>
+            <div className="p-6 bg-white border-t border-neutral-100 flex flex-col sm:flex-row justify-between items-center gap-4 z-10">
+              <div className="text-center sm:text-left">
                 <p className="text-lg font-bold">{formatIDR(detailsModal.pricePerNight)}</p>
                 <p className="text-[10px] uppercase tracking-widest text-neutral-400">per night</p>
               </div>
               <button
                 onClick={() => {
                   setSelectedVilla(detailsModal);
-                  setDetailsModal(null); // Tutup modal detail, buka modal kalender
+                  setDetailsModal(null);
                 }}
-                className="px-8 py-3.5 bg-amber-600 text-white text-xs font-semibold tracking-widest uppercase rounded-lg hover:bg-amber-500 transition-colors shadow-md"
+                className="w-full sm:w-auto px-8 py-3.5 bg-amber-600 text-white text-xs font-semibold tracking-widest uppercase rounded-lg hover:bg-amber-500 transition-colors shadow-md"
               >
-                Book This Villa
+                Select Dates
               </button>
             </div>
           </div>
@@ -359,7 +408,7 @@ export default function BookingPage() {
       )}
 
       {/* =========================================
-          MODAL KALENDER (Tetap Sama Seperti Sebelumnya)
+          MODAL KALENDER
       ========================================= */}
       {selectedVilla && (
         <div className="fixed inset-0 z-[120] flex items-center justify-center p-4">
@@ -375,11 +424,11 @@ export default function BookingPage() {
             </div>
 
             <div className="flex justify-between items-center mb-4 px-2">
-              <button onClick={prevMonth} className="p-2 hover:bg-neutral-100 rounded-full font-bold">←</button>
+              <button onClick={prevMonth} className="p-2 hover:bg-neutral-100 rounded-full font-bold transition-colors">←</button>
               <h4 className="font-semibold text-sm uppercase tracking-wider">
                 {currentMonth.toLocaleString('default', { month: 'long', year: 'numeric' })}
               </h4>
-              <button onClick={nextMonth} className="p-2 hover:bg-neutral-100 rounded-full font-bold">→</button>
+              <button onClick={nextMonth} className="p-2 hover:bg-neutral-100 rounded-full font-bold transition-colors">→</button>
             </div>
 
             <div className="grid grid-cols-7 gap-1 text-center text-xs font-bold text-neutral-400 mb-2">
